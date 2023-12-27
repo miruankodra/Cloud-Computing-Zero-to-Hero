@@ -1,0 +1,23 @@
+{
+  "name": "cloud-computing-zero-to-hero",
+  "version": "1.0.0",
+  "description": "Learning Cloud-Computing: Concepts and Tasks till I master it.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miruankodra/Cloud-Computing-Zero-to-Hero.git"
+  },
+  "author": "Miruan Kodra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/miruankodra/Cloud-Computing-Zero-to-Hero/issues"
+  },
+  "homepage": "https://github.com/miruankodra/Cloud-Computing-Zero-to-Hero#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql": "^2.18.1"
+  }
+}

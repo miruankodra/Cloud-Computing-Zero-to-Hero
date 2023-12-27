@@ -1,11 +1,19 @@
+// Imports
 const express = require('express');
 const mysql = require('mysql');
 const app = express();
 
 const port = 3000;
 
+// Parse requests with JSON payloads
 app.use(express.json());
 
+// Open connection to port 3000
+app.listen(port, () => {
+    console.log(`First Express encounter...listening to port ${port}...`)
+})
+
+// Configure DB Connection
 const con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -13,8 +21,7 @@ const con = mysql.createConnection({
     database: 'books_db'
 });
 
-const tableName = 'books';
-
+// Establish connection with the DB
 con.connect((error) => {
     if (error) {
         console.error(error);
@@ -24,6 +31,7 @@ con.connect((error) => {
     }
 });
 
+// Object for explaining functionalities and their endpoints
 const mapOfCalls =  {
     greeting: 'Welcome to books basic CRUD application',
     instruction: 'Below you ca read all functions, the call types, their endpoints and the needed body or request parameters.',
@@ -62,30 +70,38 @@ const mapOfCalls =  {
 
 }
 
-const storeBook = (values ,callback) => {
-    const selectQuery = `INSERT INTO ${tableName} VALUES (${values.id}, '${values.title}', '${values.author}', ${values.publication_year});`;
-    return con.query(selectQuery, callback)
+// Table name
+const tableName = 'books';
+
+
+// Execute query depending on call
+const executeQuery = (type, bookId = null, body = null, callback) => {
+    let queryString;
+    switch (type) {
+        case 'store':
+            queryString = `INSERT INTO ${tableName} VALUES (${body.id}, '${body.title}', '${body.author}', ${body.publication_year});`;
+            break;
+        case 'getBooks':
+            queryString = `SELECT * FROM ${tableName};`;
+            break;
+        case 'getBook':
+            queryString = `SELECT * FROM ${tableName} WHERE id='${bookId}';`;
+            break;
+        case 'updateBook':
+            queryString = `UPDATE ${tableName} SET title = '${body.title}', author = '${body.author}', publication_year = '${body.publication_year}' WHERE id = '${bookId}';`;
+            break;
+        case 'deleteBook':
+            queryString = `DELETE FROM ${tableName} WHERE id=${bookId};`;
+            break;
+        default:
+            queryString = `SELECT * FROM ${tableName};`;
+            break;
+    }
+    
+    con.query(queryString, callback);
 }
 
-const getAllBooks = (callback) => {
-    const selectQuery = `SELECT * FROM ${tableName};`;
-    return con.query(selectQuery, callback)
-}
-
-const getBookByID = (id ,callback) => {
-    const selectQuery = `SELECT * FROM ${tableName} WHERE id='${id}';`;
-    return con.query(selectQuery, callback)
-}
-
-const updateBook = (id, values, callback) => {
-    const selectQuery = `UPDATE ${tableName} SET title = '${values.title}', author = '${values.author}', publication_year = '${values.publication_year}' WHERE id = '${id}';`;
-    return con.query(selectQuery, callback)
-}
-
-const deleteBook = (id ,callback) => {
-    const selectQuery = `DELETE FROM ${tableName} WHERE id=${id};`;
-    return con.query(selectQuery, callback)
-}
+// Available routes
 
 app.get('/', (req, res) => {
     res.json(mapOfCalls);
@@ -93,54 +109,43 @@ app.get('/', (req, res) => {
 
 
 app.post('/books/store', (req, res) => {
-    storeBook(req.body ,(errors, result, fields) => {
+    executeQuery('store', null, req.body, (errors, result, fields) => {
         if (errors) {
             res.status(500).json(errors);
         }
         res.json(result);
-    })
+    });
 });
 
 app.get('/books', (req, res) => {
-    getAllBooks((errors, result, fields) => {
-        if (errors) {
-            res.status(500).json(errors);
-        }
-        res.json(result);
-    })
+    executeQuery('getBooks', null, null, (errors, result, fields) => {
+
+    });
 });
 
 app.get('/books/:bookId', (req, res) => {
-    getBookByID(req.params.bookId,(errors, result, fields) => {
+    executeQuery('getBook', req.params.bookId, null, (errors, result, fields) => {
         if (errors) {
             res.status(500).json(errors);
         }
         res.json(result);
-    })
+    });
 });
 
 app.post('/books/update/:bookId', (req, res) => {
-    updateBook(req.params.bookId, req.body, (errors, result, fields) => {
+    executeQuery('updateBook', req.params.bookId, req.body, (errors, result, fields) => {
         if (errors) {
             res.status(500).json(errors);
         }
         res.json(result);
-    })
+    });
 });
 
 app.get('/books/delete/:bookId', (req, res) => {
-    deleteBook(req.params.bookId, (errors, result, fields) => {
+    executeQuery('deleteBook', req.params.bookId, null, (errors, result, fields) => {
         if (errors) {
             res.status(500).json(errors);
         }
         res.json(result);
     })
 });
-
-
-
-app.listen(port, () => {
-    console.log(`First Express encounter...listening to port ${port}...`)
-})
-
-

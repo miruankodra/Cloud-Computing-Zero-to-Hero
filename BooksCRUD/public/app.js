@@ -14,7 +14,7 @@ routes(app);
 
 // Open connection to port 3000
 app.listen(env.connectionPort, () => {
-    console.log(`First Express encounter...listening to port ${env.connectionPort}...`)
+    console.log(`Listening to port ${env.connectionPort}...`)
 })
 
 

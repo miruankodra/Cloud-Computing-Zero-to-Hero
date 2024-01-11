@@ -31,11 +31,30 @@ const getBookById = (bookId, callback) => {
     con.query(queryString, [tableName, bookId], callback);
 }
 
-const updateBook = (bookId, bookRequest, callback) => {
-    // TODO ==> Update only columns that client sends...
-    const values = [tableName, bookRequest.title, bookRequest.author, bookRequest.publication_year, bookId]
-    const queryString = `UPDATE ?? SET title = ?, author = ?, publication_year = ? WHERE id = ?;`;
-    con.query(queryString, values, callback);
+
+const updateBook = async (bookId, bookRequest, callback) => {
+    getBookById(bookId, (errors, results, fields) => {
+        if(errors) {
+            console.error(errors)
+            return callback(null, errors)
+        }
+        if (results.length === 0){
+            const notFoundError = new Error('Book not found');
+            notFoundError.statusCode = 404;
+            return callback(notFoundError);
+        }
+
+        const existingData = results[0];
+
+        const updatedValues = {
+            title: bookRequest.title || existingData.title,
+            author: bookRequest.author || existingData.author,
+            publication_year: bookRequest.publication_year || existingData.publication_year
+        }
+        const values = [tableName, updatedValues.title, updatedValues.author, updatedValues.publication_year, bookId]
+        const queryString = `UPDATE ?? SET title = ?, author = ?, publication_year = ? WHERE id = ?;`;
+        con.query(queryString, values, callback);
+    })
 }
 
 const deleteBook = (bookId, callback) => {

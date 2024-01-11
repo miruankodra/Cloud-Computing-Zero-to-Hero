@@ -2,6 +2,7 @@
 //---------------------Routing File-----------------------------//
 /////////////////////////////////////////////////////////////////
 
+const BookRequest = require('../app/interceptors/BooksInterceptor')
 const bookController = require('../app/controllers/BooksController');
 const env = require('../environments/environment')
 
@@ -11,7 +12,7 @@ const apiRoutes = (app) => {
     })
 
 
-    app.post('/books', (req, res) => {
+    app.post('/books', BookRequest, (req, res) => {
         bookController.storeBook(req.body, (errors, result, fields) => {
             if (errors) {
                 res.status(500).json(errors);
@@ -41,7 +42,7 @@ const apiRoutes = (app) => {
         })
     });
 
-    app.patch('/books/:bookId', (req, res) => {
+    app.patch('/books/:bookId', BookRequest, (req, res) => {
         bookController.updateBook(req.params.bookId, req.body, (errors, result, fields) => {
             if (errors) {
                 res.status(500).json(errors);

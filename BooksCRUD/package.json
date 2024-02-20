@@ -19,6 +19,7 @@
   "homepage": "https://github.com/miruankodra/Cloud-Computing-Zero-to-Hero#readme",
   "dependencies": {
     "express": "^4.18.2",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "upash": "^1.0.2"
   }
 }
